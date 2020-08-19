@@ -4,6 +4,7 @@ package exercises.functionalprog
 /**
  * Suppose we define our own list type
  * It has two sub types MyNil and MyCons
+ *
  * @tparam A
  */
 sealed trait MyList[+A]  {
@@ -20,18 +21,16 @@ sealed trait MyList[+A]  {
 case object MyNil extends MyList[Nothing] {
   override def toString: String = "Nil"
 
-  override def map[B](transformer: Nothing => B): MyList[B] = ???
+  override def map[B](transformer: Nothing => B): MyList[B] = MyNil
 
-  override def filter(predicate: Nothing => Boolean): MyList[Nothing] = ???
+  override def filter(predicate: Nothing => Boolean): MyList[Nothing] = MyNil
 
-  override def ++[B >: Nothing](list: MyList[B]): MyList[B] = ???
+  override def ++[B >: Nothing](list: MyList[B]): MyList[B] = list
 
-  override def flatMap[B](transformer: Nothing => MyList[B]): MyList[B] = ???
+  override def flatMap[B](transformer: Nothing => MyList[B]): MyList[B] = MyNil
 }
 
 case class MyCons[+A](head: A, tail: MyList[A]) extends MyList[A] {
-
-  //igonore how this works, we will learn pattern matching later
   override def toString: String = {
     val tailString = tail match {
       case MyNil => "Nil"
@@ -40,13 +39,14 @@ case class MyCons[+A](head: A, tail: MyList[A]) extends MyList[A] {
     s"$head -> $tailString"
   }
 
-  override def map[B](transformer: A => B): MyList[B] = ???
+  override def map[B](transformer: A => B): MyList[B] = MyCons(transformer(head), tail.map(transformer))
 
-  override def filter(predicate: A => Boolean): MyList[A] = ???
+  override def filter(predicate: A => Boolean): MyList[A] = if(predicate(head)) MyCons(head, tail.filter(predicate))
+  else tail.filter(predicate)
 
-  override def ++[B >: A](list: MyList[B]): MyList[B] = ???
+  override def ++[B >: A](list: MyList[B]): MyList[B] = MyCons(head, tail ++ list)
 
-  override def flatMap[B](transformer: A => MyList[B]): MyList[B] = ???
+  override def flatMap[B](transformer: A => MyList[B]): MyList[B] = transformer(head) ++ tail.flatMap(transformer)
 }
 
 object MyList {
