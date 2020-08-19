@@ -7,7 +7,7 @@ object CurryExercise extends App {
    * def toCurry(f :(Int,Int) => Int) : (Int => Int => Int)
    */
   def toCurry(f: (Int, Int) => Int) : (Int => Int => Int) =
-    ???
+    x => y => f(x,y)
 
   val superAdder = toCurry((x: Int,y: Int) => x+y)
   println(superAdder(3)(4)) //should print 7
@@ -18,7 +18,7 @@ object CurryExercise extends App {
    */
 
   def fromCurry(f:Int => Int => Int) : (Int, Int) => Int =
-    ???
+    (x,y) => f(x)(y)
 
   val adder = fromCurry(x => y => x+y)
   println(adder(3,4)) //should print 7
